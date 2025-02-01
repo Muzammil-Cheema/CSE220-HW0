@@ -29,7 +29,7 @@ int boardSize = sizeof(board) / sizeof(board[0][0]);
 
 
 int main(){
-    printBoard();
+    game();
 	return 0;
 }
 
@@ -46,7 +46,6 @@ void printBoard(){
     }
     printf("     ^ ^ ^ ^ ^\n     1 2 3 4 5\n");
 }
-
 
 void game(){
     //Initial check of how many baord spaces are pre-filled
@@ -110,10 +109,9 @@ void game(){
             printBoard();
         }
     }
-    
+
     printf("Game is over.");
 }
-
 
 int isValidChoice(char question, int response){
     if (response == 'q')
