@@ -37,7 +37,7 @@ int main(){
 
 void printBoard(){
     printf("     1 2 3 4 5\n     v v v v v\n");
-    for(int i = 0; i < 5; i++){
+    for (int i = 0; i < 5; i++){
         printf("%d > ", i+1);
         for (int j = 0; j < 5; j++){
             printf("%c ", board[i][j]);
@@ -48,16 +48,15 @@ void printBoard(){
 }
 
 void game(){
-    //Initial check of how many baord spaces are pre-filled
-    for (int i = 0; i < 5; i++){
-        for (int j = 0; j < 5; j++){
-            if (isdigit(board[i][j]) == 1)
+    //Initial check of how many baord spaces are pre-filled. Used for winning condition check
+    for (int i = 0; i < 5; i++)
+        for (int j = 0; j < 5; j++)
+            if (isdigit(board[i][j]) != 0)
                 filledBoardSpaces++;
-        }
-    }
 
     //Initialize variables that store user input
-    int piece = -1, row = -1, col = -1;
+    char piece = '-';
+    int row = -1, col = -1;
 
     //Skyscrapers game logic
     while (gameOver == 0){
@@ -68,21 +67,21 @@ void game(){
         printf("Choose a piece (1-5) or q to quit: ");
         scanf(" %c", &choice);
         if (isValidChoice('p', choice) == 2){
-            gameOver = 1;
+            gameOver = 2;
             break;
         }
         if (isValidChoice('p', choice) == 0){
-            printf("\nInvalid Choice. ");
+            printf("Invalid Choice. ");
             goto Invalid1;
         }
-        piece =  choice - '0';
+        piece =  choice;
         
         //Checks if correct row is chosen
         Invalid2: 
         printf("Choose a row (0-4): ");
         scanf(" %c", &choice);
         if (isValidChoice('r', choice) == 0){
-            printf("\nInvalid Choice. ");
+            printf("Invalid Choice. ");
             goto Invalid2;
         }
         row = choice - '0';
@@ -92,16 +91,18 @@ void game(){
         printf("Choose a column (0-4): ");
         scanf(" %c", &choice);
         if (isValidChoice('c', choice) == 0){
-            printf("\nInvalid Choice. ");
+            printf("Invalid Choice. ");
             goto Invalid3;
         }
         col = choice - '0';
 
         //Checks if board space is empty
-        if (board[row][col] == '-')
+        if (board[row][col] != '-')
             printf("Invalid choice. That space is already occupied.\n");
-        else 
+        else {
             board[row][col] = piece;
+            filledBoardSpaces++;
+        }
 
         if (filledBoardSpaces == boardSize){
             gameOver = 1;
@@ -109,13 +110,13 @@ void game(){
             printBoard();
         }
     }
-
-    printf("Game is over.");
 }
 
 int isValidChoice(char question, int response){
     if (response == 'q')
         return 2;
+    
+    response -= '0';
     switch (question)
     {
     case 'p':
