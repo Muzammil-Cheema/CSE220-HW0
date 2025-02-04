@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 #include "hw0_functions.h"
 #define ROWS 5
 #define COLS 5
-#define FAILURE 1
+#define FAILURE 4
 
 int top_key[COLS] = {1, 2, 3, 4, 5};
 int bottom_key[COLS] = {1, 2, 3, 4, 5};
@@ -18,9 +19,8 @@ char board[ROWS][COLS] = {
     {'2', '-', '3', '2', '-'}, 
     {'4', '5', '4', '1', '3'}};
 
-char choice;
-int gameOver = 0;
-int filledBoardSpaces = 0;
+char choice[5];
+int gameOver = 0, filledBoardSpaces = 0, stringLen = 0;
 int boardSize = sizeof(board) / sizeof(board[0][0]);
 
 //scanf(" %c", &choice); //this command will erase whitespace in the token selection and read 1 char 
@@ -47,6 +47,8 @@ void printBoard(){
     printf("     ^ ^ ^ ^ ^\n     1 2 3 4 5\n");
 }
 
+//TODO
+//Finish switching character scanning to string scanning 
 void game(){
     //Initial check of how many baord spaces are pre-filled. Used for winning condition check
     for (int i = 0; i < 5; i++)
@@ -63,38 +65,38 @@ void game(){
         printBoard();
 
         //Checks if correct piece is chosen
-        Invalid1: 
+        invalidPiece: 
         printf("Choose a piece (1-5) or q to quit: ");
-        scanf(" %c", &choice);
+        scanf(" %s", choice);
         if (isValidChoice('p', choice) == 2){
             gameOver = 2;
             break;
         }
-        if (isValidChoice('p', choice) == 0){
+        if (isValidChoice('p', choice) != 0){
             printf("Invalid Choice. ");
-            goto Invalid1;
+            goto invalidPiece;
         }
-        piece =  choice;
+        piece = choice[0];
         
         //Checks if correct row is chosen
-        Invalid2: 
+        invalidRow: 
         printf("Choose a row (0-4): ");
-        scanf(" %c", &choice);
-        if (isValidChoice('r', choice) == 0){
+        scanf(" %s", choice);
+        if (isValidChoice('r', choice) != 0){
             printf("Invalid Choice. ");
-            goto Invalid2;
+            goto invalidRow;
         }
-        row = choice - '0';
+        row = choice[0] - '0';
 
         //Checks if correct column is chosen
-        Invalid3: 
+        invalidColumn: 
         printf("Choose a column (0-4): ");
-        scanf(" %c", &choice);
-        if (isValidChoice('c', choice) == 0){
+        scanf(" %s", choice);
+        if (isValidChoice('c', choice) != 0){
             printf("Invalid Choice. ");
-            goto Invalid3;
+            goto invalidColumn;
         }
-        col = choice - '0';
+        col = choice[0] - '0';
 
         //Checks if board space is empty
         if (board[row][col] != '-')
@@ -112,25 +114,30 @@ void game(){
     }
 }
 
-int isValidChoice(char question, int response){
-    if (response == 'q')
+
+int isValidChoice(char question, char response[]){
+    if (strcmp(response, "q") == 0)
         return 2;
+    if (strlen(response) > 1)
+        return 3;
     
-    response -= '0';
+    char res = response[0];
+    res -= '0';
     switch (question)
     {
     case 'p':
-        if (response < 1 || response > 5)
-            return 0;
+        if (res < 1 || res > 5)
+            return 1;
         break;
     case 'r': case 'c':
-        if (response < 0 || response > 4)
-            return 0;
+        if (res < 0 || res > 4)
+            return 1;
         break;
     default:
         printf("Unexpected behavior in choice validity checking");
         exit(FAILURE);
         break;
     }
-    return 1;
+
+    return 0;
 }

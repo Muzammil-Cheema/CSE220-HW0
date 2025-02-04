@@ -3,4 +3,4 @@ void printBoard();
 //Requests input for every turn the player takes
 void game();
 //Checks if the user input is valid for the game
-int isValidChoice(char question, int response);
+int isValidChoice(char question, char response[]);
