@@ -5,6 +5,7 @@
 #include "hw0_functions.h"
 #define ROWS 5
 #define COLS 5
+#define BOARD_SIZE ROWS*COLS
 #define FAILURE 4
 
 int top_key[COLS] = {1, 2, 3, 4, 5};
@@ -21,7 +22,6 @@ char board[ROWS][COLS] = {
 
 char choice[5];
 int gameOver = 0, filledBoardSpaces = 0, stringLen = 0;
-int boardSize = sizeof(board) / sizeof(board[0][0]);
 
 //scanf(" %c", &choice); //this command will erase whitespace in the token selection and read 1 char 
 //(replace the 'c' with a 'd' to read an int)
@@ -47,56 +47,69 @@ void printBoard(){
     printf("     ^ ^ ^ ^ ^\n     1 2 3 4 5\n");
 }
 
-//TODO
-//Finish switching character scanning to string scanning 
 void game(){
-    //Initial check of how many baord spaces are pre-filled. Used for winning condition check
+    //Initial check of how many baord spaces are pre-filled. Used for winning condition check.
     for (int i = 0; i < 5; i++)
         for (int j = 0; j < 5; j++)
             if (isdigit(board[i][j]) != 0)
                 filledBoardSpaces++;
 
-    //Initialize variables that store user input
+    //Initialize variables that store user input and incorrect input flags
     char piece = '-';
     int row = -1, col = -1;
+    int invalidPiece = 0, invalidRow = 0, invalidCol = 0;
 
     //Skyscrapers game logic
     while (gameOver == 0){
         printBoard();
 
         //Checks if correct piece is chosen
-        invalidPiece: 
-        printf("Choose a piece (1-5) or q to quit: ");
-        scanf(" %s", choice);
-        if (isValidChoice('p', choice) == 2){
-            gameOver = 2;
+        invalidPiece = 0;
+        while(invalidPiece == 0) {
+            printf("Choose a piece (1-5) or q to quit: ");
+            scanf(" %s", choice);
+            if (isValidChoice('p', choice) == 2){
+                gameOver = 2;
+                break;
+            }
+            if (isValidChoice('p', choice) != 0){
+                printf("Invalid Choice. ");
+                continue;
+            }
+            piece = choice[0];
+            invalidPiece = 1;
+        }
+        if (gameOver == 2)
             break;
-        }
-        if (isValidChoice('p', choice) != 0){
-            printf("Invalid Choice. ");
-            goto invalidPiece;
-        }
-        piece = choice[0];
+        
         
         //Checks if correct row is chosen
-        invalidRow: 
-        printf("Choose a row (0-4): ");
-        scanf(" %s", choice);
-        if (isValidChoice('r', choice) != 0){
-            printf("Invalid Choice. ");
-            goto invalidRow;
-        }
-        row = choice[0] - '0';
+        invalidRow = 0; 
+        while (invalidRow == 0){
+            printf("Choose a row (0-4): ");
+            scanf(" %s", choice);
+            if (isValidChoice('r', choice) != 0){
+                printf("Invalid Choice. ");
+                continue;
+            }
+            row = choice[0] - '0';
+            invalidRow = 1;
+        } 
+        
 
         //Checks if correct column is chosen
-        invalidColumn: 
-        printf("Choose a column (0-4): ");
-        scanf(" %s", choice);
-        if (isValidChoice('c', choice) != 0){
-            printf("Invalid Choice. ");
-            goto invalidColumn;
+        invalidCol = 0;
+        while(invalidCol == 0){
+            printf("Choose a column (0-4): ");
+            scanf(" %s", choice);
+            if (isValidChoice('c', choice) != 0){
+                printf("Invalid Choice. ");
+                continue;
+            }
+            col = choice[0] - '0';
+            invalidCol = 1;
         }
-        col = choice[0] - '0';
+        
 
         //Checks if board space is empty
         if (board[row][col] != '-')
@@ -106,7 +119,7 @@ void game(){
             filledBoardSpaces++;
         }
 
-        if (filledBoardSpaces == boardSize){
+        if (filledBoardSpaces == BOARD_SIZE){
             gameOver = 1;
             printf("Congratulations, you have filled the board!\n");
             printBoard();
